@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carte — Vantadrive</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <div class="logo">Vantadrive</div>
+          <div class="tagline">Carte interactive</div>
+        </div>
+        <a class="button secondary" href="list.html">Liste</a>
+      </header>
+
+      <section class="card">
+        <div class="grid two">
+          <div class="stack">
+            <label for="filter-city">Ville</label>
+            <select id="filter-city" class="input"></select>
+          </div>
+          <div class="stack">
+            <label for="filter-type">Type véhicule</label>
+            <select id="filter-type" class="input"></select>
+          </div>
+          <div class="stack">
+            <label for="filter-owner">Type annonce</label>
+            <select id="filter-owner" class="input">
+              <option value="">Tous</option>
+              <option value="Particulier">Particulier</option>
+              <option value="Professionnel">Professionnel</option>
+            </select>
+          </div>
+          <div class="stack">
+            <label for="filter-availability">Disponibilité</label>
+            <select id="filter-availability" class="input">
+              <option value="">Toutes</option>
+              <option value="Aujourd'hui">Aujourd'hui</option>
+              <option value="Cette semaine">Cette semaine</option>
+              <option value="Flexible">Flexible</option>
+            </select>
+          </div>
+          <div class="stack">
+            <label for="filter-min">Budget min (CHF)</label>
+            <input id="filter-min" type="number" class="input" placeholder="0" />
+          </div>
+          <div class="stack">
+            <label for="filter-max">Budget max (CHF)</label>
+            <input id="filter-max" type="number" class="input" placeholder="500" />
+          </div>
+          <div class="stack">
+            <label for="filter-radius">Autour de moi (km)</label>
+            <select id="filter-radius" class="input">
+              <option value="">Tous</option>
+              <option value="5">5 km</option>
+              <option value="15">15 km</option>
+              <option value="30">30 km</option>
+            </select>
+          </div>
+          <div class="stack" style="justify-content: center">
+            <label class="toggle">
+              <input id="filter-urgent" type="checkbox" />
+              Mode urgence
+            </label>
+          </div>
+        </div>
+        <div class="stack" style="margin-top: 12px">
+          <button class="button secondary" id="locate-me">Autour de moi</button>
+        </div>
+      </section>
+
+      <section class="map-container" id="map"></section>
+
+      <section id="map-preview" class="stack" style="margin-top: 16px"></section>
+    </main>
+
+    <div class="disclaimer"></div>
+    <nav class="bottom-nav"></nav>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script type="module">
+      import { initNav, initDisclaimer } from "./assets/app.js";
+      import { initMap } from "./assets/map.js";
+      initNav();
+      initDisclaimer();
+      initMap();
+    </script>
+  </body>
+</html>

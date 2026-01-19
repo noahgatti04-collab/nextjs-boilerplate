@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Détail annonce — Vantadrive</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <div class="logo">Vantadrive</div>
+          <div class="tagline">Détail annonce</div>
+        </div>
+        <a class="button secondary" href="list.html">Retour</a>
+      </header>
+
+      <section id="listing-content" class="stack"></section>
+    </main>
+
+    <div class="disclaimer"></div>
+    <nav class="bottom-nav"></nav>
+
+    <script type="module">
+      import { Storage } from "./assets/storage.js";
+      import { formatPrice, initDisclaimer, initNav } from "./assets/app.js";
+
+      initNav();
+      initDisclaimer();
+
+      const params = new URLSearchParams(window.location.search);
+      const listingId = params.get("id");
+      const data = Storage.getAll();
+      const listing = data.listings.find((item) => item.id === listingId);
+      const container = document.querySelector("#listing-content");
+
+      if (!listing) {
+        container.innerHTML = "<p>Annonce introuvable.</p>";
+      } else {
+        const owner = data.users.find((user) => user.id === listing.ownerId);
+        const images = listing.images
+          .map((src) => `<img src="${src}" alt="${listing.title}" loading="lazy" />`)
+          .join("");
+
+        container.innerHTML = `
+          <div class="card">
+            <div class="grid two">${images}</div>
+          </div>
+          <div class="card">
+            <h2>${listing.title}</h2>
+            <p class="listing-meta">${listing.city} · ${listing.type} · ${listing.ownerType}</p>
+            <p>${listing.description || "Véhicule premium prêt à rouler en Suisse."}</p>
+            <div class="listing-meta">
+              ${formatPrice(listing.indicativePricePerDay)} · ${listing.availabilityTag}
+            </div>
+            <div class="listing-meta">Règles: ${listing.rules}</div>
+          </div>
+          <div class="card">
+            <h3>Contacter le propriétaire</h3>
+            <p class="listing-meta">${owner.name}</p>
+            ${
+              owner.allowDirectContact
+                ? `<p class="listing-meta">${owner.email} · ${owner.phone}</p>`
+                : `
+                  <form id="message-form" class="stack">
+                    <label>Message</label>
+                    <textarea class="input" rows="4" required></textarea>
+                    <button class="button" type="submit">Envoyer</button>
+                  </form>
+                `
+            }
+          </div>
+          <div class="card">
+            <h3>Important</h3>
+            <ul class="stack" style="padding-left: 18px; color: var(--muted)">
+              <li>Vantadrive est un intermédiaire.</li>
+              <li>Aucun paiement de location n'est géré.</li>
+              <li>Aucun contrat ou assurance n'est fourni.</li>
+            </ul>
+          </div>
+        `;
+
+        const form = document.querySelector("#message-form");
+        if (form) {
+          form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const message = form.querySelector("textarea").value.trim();
+            if (!message) return;
+            const newMessage = {
+              id: `msg-${Date.now()}`,
+              listingId: listing.id,
+              senderName: "Visiteur",
+              message,
+              createdAt: new Date().toISOString(),
+            };
+            data.messages.unshift(newMessage);
+            Storage.setAll(data);
+            form.reset();
+            alert("Message envoyé au propriétaire.");
+          });
+        }
+      }
+    </script>
+  </body>
+</html>

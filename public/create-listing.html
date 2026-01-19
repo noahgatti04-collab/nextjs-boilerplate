@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Publier — Vantadrive</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <div class="logo">Vantadrive</div>
+          <div class="tagline">Créer une annonce</div>
+        </div>
+        <a class="button secondary" href="dashboard.html">Dashboard</a>
+      </header>
+
+      <section class="card" id="quota-message"></section>
+
+      <section class="card">
+        <form id="listing-form" class="stack">
+          <label>Titre</label>
+          <input class="input" type="text" required />
+          <label>Type véhicule</label>
+          <select class="input">
+            <option>Voiture</option>
+            <option>Van</option>
+            <option>Utilitaire</option>
+            <option>Luxe</option>
+          </select>
+          <label>Ville</label>
+          <input class="input" type="text" required />
+          <label>Prix indicatif / jour</label>
+          <input class="input" type="number" required />
+          <label>Disponibilité</label>
+          <select class="input">
+            <option>Aujourd'hui</option>
+            <option>Cette semaine</option>
+            <option>Flexible</option>
+          </select>
+          <label>Réponse rapide</label>
+          <select class="input">
+            <option>Rapide</option>
+            <option>Normal</option>
+          </select>
+          <label>Règles</label>
+          <textarea class="input" rows="4"></textarea>
+          <button class="button" type="submit">Publier</button>
+        </form>
+      </section>
+    </main>
+
+    <div class="disclaimer"></div>
+    <nav class="bottom-nav"></nav>
+
+    <script type="module">
+      import { Storage } from "./assets/storage.js";
+      import { canCreateListing, initDisclaimer, initNav } from "./assets/app.js";
+
+      initNav();
+      initDisclaimer();
+
+      const user = Storage.getCurrentUser();
+      if (!user) {
+        window.location.href = "login.html";
+      }
+
+      const quotaMessage = document.querySelector("#quota-message");
+      const quota = canCreateListing(user.id);
+      quotaMessage.innerHTML = quota.ok
+        ? "<p class='listing-meta'>Quota disponible pour publier une annonce.</p>"
+        : `<p class='listing-meta'>${quota.reason}</p>`;
+
+      const form = document.querySelector("#listing-form");
+      if (!quota.ok) {
+        form.querySelector("button").disabled = true;
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const [title, type, city, price, availability, responseSpeed, rules] =
+          event.target.querySelectorAll("input, select, textarea");
+        const listing = {
+          id: `listing-${Date.now()}`,
+          ownerId: user.id,
+          title: title.value.trim(),
+          type: type.value,
+          ownerType: user.ownerType,
+          city: city.value.trim(),
+          lat: 46.52,
+          lng: 6.63,
+          indicativePricePerDay: Number(price.value),
+          availabilityTag: availability.value,
+          responseSpeed: responseSpeed.value,
+          rules: rules.value.trim() || "Règles standard.",
+          images: [
+            "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80",
+          ],
+          boostedUntil: null,
+          createdAt: new Date().toISOString(),
+        };
+        Storage.addListing(listing);
+        alert("Annonce publiée !");
+        window.location.href = "dashboard.html";
+      });
+    </script>
+  </body>
+</html>

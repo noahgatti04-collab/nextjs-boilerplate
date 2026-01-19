@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard — Vantadrive</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <div class="logo">Vantadrive</div>
+          <div class="tagline">Espace propriétaire</div>
+        </div>
+        <button class="button secondary" id="logout">Déconnexion</button>
+      </header>
+
+      <section class="card" id="subscription-status"></section>
+
+      <section class="card">
+        <h3>Mes annonces</h3>
+        <div id="owner-listings" class="stack"></div>
+        <a class="button" href="create-listing.html">Créer une annonce</a>
+      </section>
+
+      <section class="card">
+        <h3>Demandes reçues</h3>
+        <div id="owner-messages" class="stack"></div>
+      </section>
+    </main>
+
+    <div class="disclaimer"></div>
+    <nav class="bottom-nav"></nav>
+
+    <script type="module">
+      import { Storage, getSubscriptionForUser } from "./assets/storage.js";
+      import { canCreateListing, formatDate, initDisclaimer, initNav } from "./assets/app.js";
+
+      initNav();
+      initDisclaimer();
+
+      const user = Storage.getCurrentUser();
+      if (!user) {
+        window.location.href = "login.html";
+      }
+
+      const data = Storage.getAll();
+      const subscription = getSubscriptionForUser(user.id);
+      const subscriptionStatus = document.querySelector("#subscription-status");
+      subscriptionStatus.innerHTML = subscription
+        ? `
+          <h3>Abonnement actif</h3>
+          <p class="listing-meta">Plan: ${subscription.plan} · Depuis ${formatDate(
+            subscription.startedAt
+          )}</p>
+        `
+        : `
+          <h3>Aucun abonnement</h3>
+          <p class="listing-meta">Sélectionnez un plan pour publier.</p>
+          <a class="button" href="pricing.html">Choisir un plan</a>
+        `;
+
+      const ownerListings = data.listings.filter((listing) => listing.ownerId === user.id);
+      const listingContainer = document.querySelector("#owner-listings");
+      listingContainer.innerHTML = ownerListings
+        .map(
+          (listing) => `
+          <div class="card">
+            <h4>${listing.title}</h4>
+            <p class="listing-meta">${listing.city} · ${listing.type}</p>
+            <div class="stack">
+              <button class="button secondary" data-toggle="${listing.id}">
+                ${listing.active === false ? "Activer" : "Désactiver"}
+              </button>
+              <a class="button ghost" href="boosts.html?listing=${listing.id}">Acheter un boost</a>
+            </div>
+          </div>
+        `
+        )
+        .join("") || "<p class='listing-meta'>Aucune annonce.</p>";
+
+      document.querySelectorAll("[data-toggle]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const listingId = button.getAttribute("data-toggle");
+          const listing = data.listings.find((item) => item.id === listingId);
+          listing.active = listing.active === false ? true : false;
+          Storage.updateListing(listing);
+          window.location.reload();
+        });
+      });
+
+      const messages = data.messages.filter((message) =>
+        ownerListings.some((listing) => listing.id === message.listingId)
+      );
+      document.querySelector("#owner-messages").innerHTML = messages
+        .map(
+          (message) => `
+          <div class="card">
+            <h4>Annonce: ${message.listingId}</h4>
+            <p class="listing-meta">${message.senderName} · ${formatDate(message.createdAt)}</p>
+            <p>${message.message}</p>
+          </div>
+        `
+        )
+        .join("") || "<p class='listing-meta'>Aucune demande.</p>";
+
+      document.querySelector("#logout").addEventListener("click", () => {
+        Storage.setCurrentUser(null);
+        window.location.href = "index.html";
+      });
+
+      const quota = canCreateListing(user.id);
+      if (!quota.ok) {
+        const link = document.querySelector("a[href='create-listing.html']");
+        link.classList.add("secondary");
+        link.textContent = `Quota atteint · ${quota.reason}`;
+        link.href = "pricing.html";
+      }
+    </script>
+  </body>
+</html>

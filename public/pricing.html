@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Abonnements — Vantadrive</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <div class="logo">Vantadrive</div>
+          <div class="tagline">Plans d'abonnement</div>
+        </div>
+        <a class="button secondary" href="dashboard.html">Dashboard</a>
+      </header>
+
+      <section class="grid two" id="plans"></section>
+    </main>
+
+    <div class="disclaimer"></div>
+    <nav class="bottom-nav"></nav>
+
+    <script type="module">
+      import { Storage } from "./assets/storage.js";
+      import { initDisclaimer, initNav } from "./assets/app.js";
+
+      initNav();
+      initDisclaimer();
+
+      const plans = [
+        { name: "Starter", price: 10, quota: "1 véhicule" },
+        { name: "Grow", price: 49, quota: "Jusqu'à 3 véhicules" },
+        { name: "Scale", price: 79, quota: "Jusqu'à 6 véhicules" },
+        { name: "Unlimited", price: 219, quota: "Illimité" },
+      ];
+
+      const container = document.querySelector("#plans");
+      container.innerHTML = plans
+        .map(
+          (plan) => `
+        <div class="card">
+          <h3>${plan.name}</h3>
+          <p class="listing-meta">${plan.price} CHF / mois</p>
+          <p class="listing-meta">${plan.quota}</p>
+          <button class="button" data-plan="${plan.name}">S'abonner</button>
+        </div>
+      `
+        )
+        .join("");
+
+      container.querySelectorAll("[data-plan]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const user = Storage.getCurrentUser();
+          if (!user) {
+            window.location.href = "login.html";
+            return;
+          }
+          Storage.addSubscription({
+            userId: user.id,
+            plan: button.getAttribute("data-plan"),
+            startedAt: new Date().toISOString(),
+            status: "active",
+          });
+          alert("Abonnement activé (paiement simulé).");
+          window.location.href = "dashboard.html";
+        });
+      });
+    </script>
+  </body>
+</html>

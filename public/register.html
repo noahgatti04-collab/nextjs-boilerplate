@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inscription — Vantadrive</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <div class="logo">Vantadrive</div>
+          <div class="tagline">Créer un compte</div>
+        </div>
+        <a class="button secondary" href="index.html">Home</a>
+      </header>
+
+      <section class="card">
+        <form id="register-form" class="stack">
+          <label>Nom complet</label>
+          <input class="input" type="text" required />
+          <label>Email</label>
+          <input class="input" type="email" required />
+          <label>Téléphone</label>
+          <input class="input" type="tel" required />
+          <label>Type</label>
+          <select class="input">
+            <option value="Particulier">Particulier</option>
+            <option value="Professionnel">Professionnel</option>
+          </select>
+          <label>
+            <input type="checkbox" checked /> Autoriser le contact direct
+          </label>
+          <button class="button" type="submit">Créer mon compte</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <p class="listing-meta">
+          Déjà un compte ? <a href="login.html">Se connecter</a>
+        </p>
+      </section>
+    </main>
+
+    <div class="disclaimer"></div>
+    <nav class="bottom-nav"></nav>
+
+    <script type="module">
+      import { Storage } from "./assets/storage.js";
+      import { initDisclaimer, initNav } from "./assets/app.js";
+
+      initNav();
+      initDisclaimer();
+
+      document.querySelector("#register-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const [nameInput, emailInput, phoneInput, typeSelect, directContact] =
+          event.target.querySelectorAll("input, select");
+        const newUser = {
+          id: `user-${Date.now()}`,
+          name: nameInput.value.trim(),
+          email: emailInput.value.trim(),
+          phone: phoneInput.value.trim(),
+          ownerType: typeSelect.value,
+          allowDirectContact: directContact.checked,
+        };
+        Storage.addUser(newUser);
+        Storage.setCurrentUser(newUser.id);
+        alert("Compte créé !");
+        window.location.href = "pricing.html";
+      });
+    </script>
+  </body>
+</html>

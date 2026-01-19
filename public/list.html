@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Annonces — Vantadrive</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <div class="logo">Vantadrive</div>
+          <div class="tagline">Annonces en Suisse</div>
+        </div>
+        <a class="button secondary" href="map.html">Carte</a>
+      </header>
+
+      <section class="card">
+        <div class="grid two">
+          <div class="stack">
+            <label for="sort">Trier par</label>
+            <select id="sort" class="input">
+              <option value="boosted">Boosté</option>
+              <option value="recent">Plus récent</option>
+              <option value="distance">Proximité</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="listings" id="listing-results"></section>
+      <div class="stack" style="margin-top: 16px">
+        <button class="button secondary" id="load-more">Charger plus</button>
+      </div>
+    </main>
+
+    <div class="disclaimer"></div>
+    <nav class="bottom-nav"></nav>
+
+    <script type="module">
+      import { Storage, getActiveBoost } from "./assets/storage.js";
+      import { hydrateBoosts, initDisclaimer, initNav } from "./assets/app.js";
+      import { renderListingCard } from "./assets/ui.js";
+
+      hydrateBoosts();
+      initNav();
+      initDisclaimer();
+
+      const state = {
+        page: 1,
+        perPage: 6,
+        listings: [],
+        position: null,
+      };
+
+      const getDistance = (listing) => {
+        if (!state.position) return Infinity;
+        const toRad = (value) => (value * Math.PI) / 180;
+        const R = 6371;
+        const dLat = toRad(listing.lat - state.position.lat);
+        const dLng = toRad(listing.lng - state.position.lng);
+        const lat1 = toRad(state.position.lat);
+        const lat2 = toRad(listing.lat);
+        const x =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.sin(dLng / 2) * Math.sin(dLng / 2) * Math.cos(lat1) * Math.cos(lat2);
+        const c = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+        return R * c;
+      };
+
+      const sortListings = (listings) => {
+        const sortBy = document.querySelector("#sort").value;
+        if (sortBy === "recent") {
+          return [...listings].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+        if (sortBy === "distance") {
+          return [...listings].sort((a, b) => getDistance(a) - getDistance(b));
+        }
+        return [...listings].sort((a, b) => {
+          const aBoost = getActiveBoost(a.id) ? 1 : 0;
+          const bBoost = getActiveBoost(b.id) ? 1 : 0;
+          return bBoost - aBoost;
+        });
+      };
+
+      const render = () => {
+        const results = document.querySelector("#listing-results");
+        const sorted = sortListings(state.listings);
+        const end = state.page * state.perPage;
+        results.innerHTML = sorted
+          .slice(0, end)
+          .map((listing) => renderListingCard(listing))
+          .join("");
+        document.querySelector("#load-more").style.display =
+          end >= sorted.length ? "none" : "block";
+      };
+
+      const loadListings = () => {
+        const data = Storage.getAll();
+        state.listings = data.listings;
+        render();
+      };
+
+      document.querySelector("#load-more").addEventListener("click", () => {
+        state.page += 1;
+        render();
+      });
+
+      document.querySelector("#sort").addEventListener("change", render);
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          state.position = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          loadListings();
+        }, loadListings);
+      } else {
+        loadListings();
+      }
+    </script>
+  </body>
+</html>

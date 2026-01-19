@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vantadrive — rent a ride
 
-## Getting Started
+MVP mobile-first pour la Suisse. Application web statique en HTML/CSS/JS vanilla avec carte Leaflet, annonces mockées et stockage LocalStorage.
 
-First, run the development server:
+## Structure
+
+Fichiers principaux disponibles dans `public/` :
+
+- `index.html` (home)
+- `map.html` (carte + filtres)
+- `list.html` (liste annonces)
+- `listing.html?id=...` (détail annonce)
+- `login.html`, `register.html`
+- `dashboard.html` (propriétaire)
+- `create-listing.html` (création annonce)
+- `pricing.html` (abonnements)
+- `boosts.html` (acheter boost)
+- `legal.html` (mentions légales + CGU + disclaimer)
+- `public/assets/` (styles, logique JS, seed data)
+
+## Lancer en local
+
+Vous pouvez utiliser un serveur statique simple :
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npx serve public
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Puis ouvrir `http://localhost:3000/index.html` (ou l’URL affichée par le serveur).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Reset des données LocalStorage
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Dans la console du navigateur :
 
-## Learn More
+```js
+localStorage.removeItem("vantadrive");
+```
 
-To learn more about Next.js, take a look at the following resources:
+Rechargez la page pour reseeder les données.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Ajouter des annonces
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Ouvrez `public/assets/data.js`.
+2. Ajoutez un objet dans `seedListings` avec les champs :
+   - `id`, `title`, `type`, `ownerType`, `city`, `lat`, `lng`,
+   - `indicativePricePerDay`, `availabilityTag`, `responseSpeed`,
+   - `images`, `boostedUntil`, `createdAt`.
+3. Sauvegardez et rechargez la page.

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connexion — Vantadrive</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <div class="logo">Vantadrive</div>
+          <div class="tagline">Connexion</div>
+        </div>
+        <a class="button secondary" href="index.html">Home</a>
+      </header>
+
+      <section class="card">
+        <form id="login-form" class="stack">
+          <label>Email</label>
+          <input class="input" type="email" required />
+          <label>Nom</label>
+          <input class="input" type="text" required />
+          <button class="button" type="submit">Se connecter</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <p class="listing-meta">
+          Pas de compte ? <a href="register.html">Créer un compte</a>
+        </p>
+      </section>
+    </main>
+
+    <div class="disclaimer"></div>
+    <nav class="bottom-nav"></nav>
+
+    <script type="module">
+      import { Storage } from "./assets/storage.js";
+      import { initDisclaimer, initNav } from "./assets/app.js";
+
+      initNav();
+      initDisclaimer();
+
+      document.querySelector("#login-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const [emailInput, nameInput] = event.target.querySelectorAll("input");
+        const email = emailInput.value.trim();
+        const name = nameInput.value.trim();
+        const data = Storage.getAll();
+        const existing = data.users.find((user) => user.email === email);
+        if (!existing) {
+          alert("Compte introuvable. Merci de créer un compte.");
+          return;
+        }
+        Storage.setCurrentUser(existing.id);
+        alert(`Bienvenue ${name} !`);
+        window.location.href = "dashboard.html";
+      });
+    </script>
+  </body>
+</html>

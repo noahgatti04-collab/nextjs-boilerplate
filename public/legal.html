@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mentions légales — Vantadrive</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <div class="logo">Vantadrive</div>
+          <div class="tagline">Mentions légales & CGU</div>
+        </div>
+        <a class="button secondary" href="index.html">Home</a>
+      </header>
+
+      <section class="card">
+        <h2>Mentions légales</h2>
+        <p class="listing-meta">Société éditrice (placeholder) · Suisse</p>
+      </section>
+
+      <section class="card">
+        <h2>Conditions d'utilisation</h2>
+        <ul class="stack" style="padding-left: 18px; color: var(--muted)">
+          <li>Vantadrive met en relation des propriétaires et des conducteurs.</li>
+          <li>La plateforme ne gère aucun paiement de location.</li>
+          <li>Aucun contrat ni assurance n'est fourni par Vantadrive.</li>
+          <li>
+            Vantadrive n'est pas responsable des accidents, dommages, litiges ou
+            non-paiements.
+          </li>
+          <li>
+            Chaque utilisateur doit vérifier son assurance et respecter la loi
+            suisse.
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <div class="disclaimer"></div>
+    <nav class="bottom-nav"></nav>
+
+    <script type="module">
+      import { initDisclaimer, initNav } from "./assets/app.js";
+      initNav();
+      initDisclaimer();
+    </script>
+  </body>
+</html>
