@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boosts — Vantadrive</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <div class="logo">Vantadrive</div>
+          <div class="tagline">Boostez votre annonce</div>
+        </div>
+        <a class="button secondary" href="dashboard.html">Dashboard</a>
+      </header>
+
+      <section class="card" id="listing-target"></section>
+
+      <section class="grid two" id="boosts"></section>
+    </main>
+
+    <div class="disclaimer"></div>
+    <nav class="bottom-nav"></nav>
+
+    <script type="module">
+      import { Storage } from "./assets/storage.js";
+      import { initDisclaimer, initNav } from "./assets/app.js";
+
+      initNav();
+      initDisclaimer();
+
+      const params = new URLSearchParams(window.location.search);
+      const listingId = params.get("listing");
+      const data = Storage.getAll();
+      const listing = data.listings.find((item) => item.id === listingId);
+      const listingTarget = document.querySelector("#listing-target");
+
+      listingTarget.innerHTML = listing
+        ? `<h3>${listing.title}</h3><p class="listing-meta">${listing.city} · ${listing.type}</p>`
+        : "<p class='listing-meta'>Sélectionnez une annonce depuis le dashboard.</p>";
+
+      const boosts = [
+        { label: "1 jour", price: 4.9, days: 1 },
+        { label: "7 jours", price: 24.9, days: 7 },
+        { label: "14 jours", price: 39.9, days: 14 },
+      ];
+
+      const container = document.querySelector("#boosts");
+      container.innerHTML = boosts
+        .map(
+          (boost) => `
+        <div class="card">
+          <h3>${boost.label}</h3>
+          <p class="listing-meta">${boost.price} CHF</p>
+          <button class="button" data-days="${boost.days}">Acheter</button>
+        </div>
+      `
+        )
+        .join("");
+
+      container.querySelectorAll("[data-days]").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (!listing) return;
+          const days = Number(button.getAttribute("data-days"));
+          const endsAt = new Date();
+          endsAt.setDate(endsAt.getDate() + days);
+          Storage.addBoost({
+            listingId: listing.id,
+            startsAt: new Date().toISOString(),
+            endsAt: endsAt.toISOString(),
+          });
+          alert("Boost activé (paiement simulé).");
+          window.location.href = "dashboard.html";
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vantadrive — rent a ride</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <div class="logo">Vantadrive</div>
+          <div class="tagline">rent a ride · Suisse</div>
+        </div>
+        <div class="tag" data-current-user></div>
+      </header>
+
+      <section class="hero">
+        <h1>La plateforme de mise en relation véhicules premium, en Suisse.</h1>
+        <p>
+          Louez ou proposez un véhicule en toute simplicité. Vantadrive ne gère
+          ni paiement, ni contrat, ni assurance. Vous restez libre.
+        </p>
+        <div class="stack" style="margin-top: 16px">
+          <a class="button" href="map.html">Explorer la carte</a>
+          <a class="button secondary" href="list.html">Voir les annonces</a>
+        </div>
+      </section>
+
+      <section class="grid two">
+        <div class="card">
+          <h3>Carte interactive</h3>
+          <p class="listing-meta">
+            Filtrez par ville, type, budget et urgence. Repérez les boosts en un
+            coup d'œil.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Abonnements flexibles</h3>
+          <p class="listing-meta">
+            Quatre plans pour gérer votre flotte et rester visible.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Boosts express</h3>
+          <p class="listing-meta">
+            Remontez instantanément vos annonces en haut des résultats.
+          </p>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Démarrer en 60 secondes</h2>
+        <ol class="stack" style="padding-left: 18px; color: var(--muted)">
+          <li>Créez un compte (simulation locale).</li>
+          <li>Choisissez un abonnement.</li>
+          <li>Publiez votre première annonce.</li>
+        </ol>
+        <div class="stack">
+          <a class="button" href="register.html">Créer un compte</a>
+          <a class="button secondary" href="pricing.html">Voir les plans</a>
+        </div>
+      </section>
+    </main>
+
+    <div class="disclaimer"></div>
+    <nav class="bottom-nav"></nav>
+
+    <script type="module">
+      import { initNav, initDisclaimer, initAuthBanner } from "./assets/app.js";
+      initNav();
+      initDisclaimer();
+      initAuthBanner();
+    </script>
+  </body>
+</html>
